@@ -8,8 +8,9 @@ load_dotenv(dotenv_path=env_path)
 openai_api_key = os.getenv('OPENAI_API_KEY')
 client = OpenAI(api_key=openai_api_key)
 base_dir = '/Users/guobaichen/Documents/MyProgram/NTU-2024-spring-GenAI'
+model = 'gpt-4o'
 
-def generate_essay(mode, role):
+def generate_essay(mode, role, model):
     match mode:
         case "eng":
             topic_name = 'hw2/topics/english_topic.txt'
@@ -17,7 +18,7 @@ def generate_essay(mode, role):
             with open(topic_path, 'r') as f:
                 topic = f.read()
             completion = client.chat.completions.create(
-                model="gpt-4o",
+                model=model,
                 messages=[
                     {"role": "system", "content": f"You are a {role}."},
                     {"role": "user", "content": topic}
@@ -30,7 +31,7 @@ def generate_essay(mode, role):
             with open(topic_path, 'r') as f:
                 topic = f.read()
             completion = client.chat.completions.create(
-                model="gpt-4o",
+                model=model,
                 messages=[
                     {"role": "system", "content": f"你是一名{role}."},
                     {"role": "user", "content": topic}
@@ -44,7 +45,7 @@ def generate_essay(mode, role):
         f.write(reply)
     return
 
-def evalue_essay(mode):
+def evalue_essay(mode, model):
     match mode:
         case "eng":
             # get evaluation rules
@@ -61,7 +62,7 @@ def evalue_essay(mode):
 
             # evaluate
             completion = client.chat.completions.create(
-                model="gpt-4o",
+                model=model,
                 messages=[
                     {"role": "system", "content": evaluation_rules},
                     {"role": "user", "content": f"Student's Essay: {essay}"}
@@ -83,7 +84,7 @@ def evalue_essay(mode):
 
             # evaluate
             completion = client.chat.completions.create(
-                model="gpt-4o",
+                model=model,
                 messages=[
                     {"role": "system", "content": evaluation_rules},
                     {"role": "user", "content": f"學生的文章: {essay}"}
@@ -100,17 +101,17 @@ def evalue_essay(mode):
 def main():
     # generate english essay
     role = "perfect writer"
-    generate_essay("eng", role)
+    generate_essay("eng", role, model)
 
     # evaluate english essay
-    evalue_essay("eng")
+    evalue_essay("eng", model)
 
     # generate chinese essay
     role = "專業的作家"
-    generate_essay("zh", role)
+    generate_essay("zh", role, model)
 
     # evaluate chinese essay
-    evalue_essay("zh")
+    evalue_essay("zh", model)
 
 if __name__ == '__main__':
     main()
